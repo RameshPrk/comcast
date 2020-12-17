@@ -15,7 +15,7 @@ import java.util.stream.Collectors;
 
 public class Driver {
 
-	public static void main(String[] args) {
+	public static void main(String[] args) { 
 		List<Map<String , String>> aList = new ArrayList<>();
 		List<List<String>> CSVData = new ArrayList<>();
 		Map<String , String> setData = null;
@@ -27,6 +27,7 @@ public class Driver {
 				setData = new HashMap<String , String>();
 				for (int j = 0; j < CSVData.get(i).size(); j++) {
 					setData.put("field"+j, CSVData.get(i).get(j));
+					
 			}
 				aList.add(setData);
 			}
@@ -35,6 +36,8 @@ public class Driver {
 			getOldestFruitAndAge(aList);
 			getTheNumberOfEachTypeOfFruitInDescendingOrder(aList);
 			getVariousCharacteristicsOfEachFruitByYype(aList);	
+		}else {
+			System.out.println("There is no data in csv file. It might be empty!!");
 		}
 	}
 	
@@ -48,7 +51,7 @@ public class Driver {
 		    }
 		}
 		catch(FileNotFoundException e) {
-			System.out.println("File Not Found in provided path. Please check your provided path ");
+			System.out.println("File Not Found in provided path. Please check your provided path!!");
 		}	
 		catch(Exception e) {
 			System.out.println(e.getMessage());
@@ -85,11 +88,26 @@ public class Driver {
         System.out.println("*********************************************");
    }
 	public static void getVariousCharacteristicsOfEachFruitByYype(List<Map<String , String>> aList) { 
-		Map<Object, Long> VariousCharacteristicsOfEachFruitByYype = aList.stream().collect(Collectors.groupingBy(x -> Arrays.asList(x.get("field0"), x.get("field2"), x.get("field3")), Collectors.counting()));
+		List<String> supplierNames = new ArrayList<String>();
+		aList.get(0).entrySet().forEach(entry->{
+	            if(!entry.getKey().equalsIgnoreCase("field1")) {
+	            	supplierNames.add(entry.getKey());
+	            }
+	            
+	         });
+		Map<Object, List<Object>> VariousCharacteristicsOfEachFruitByYype = aList.stream()
+		        .collect(Collectors.groupingBy(map -> 
+		                    groupfield(map,supplierNames), Collectors.toList()));
 		System.out.println("The various characteristics (count, color, shape, etc.) of each fruit by type: ");	
 		VariousCharacteristicsOfEachFruitByYype.entrySet().forEach(entry->{
-            System.out.println(entry.getValue() + ": " + entry.getKey());  
+            System.out.println(entry.getValue().size() + ": " + entry.getKey());  
          });
 		System.out.println("*********************************************");
+	}
+	
+	private static List<String> groupfield(Map<String,String> map, List<String> fields) {
+		return fields.stream()
+	            .map(map::get)
+	            .collect(Collectors.toList());
 	}
 }
